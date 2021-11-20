@@ -1,0 +1,4 @@
+yarn-error.log
+build
+dist
+/yarn-error.log

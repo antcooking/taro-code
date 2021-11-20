@@ -1,0 +1,8 @@
+static/**
+build/**
+node_modules/**
+**/*.md
+**/*.svg
+**/*.ejs
+**/*.html
+package.json

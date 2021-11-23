@@ -17,8 +17,8 @@
     "source.fixAll.stylelint": true
   },
   "eslint.options": {
-    "configFile": "eslint.config.js"
+    "configFile": ".eslintrc.js"
   },
-  // "stylelint.enable": true,
-  // "stylelint.configFile": "stylelint.config.js"
+  "stylelint.enable": true,
+  "stylelint.configFile": ".stylelint.json"
 }

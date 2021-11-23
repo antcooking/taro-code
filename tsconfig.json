@@ -30,6 +30,6 @@
     "skipLibCheck": false
   },
   "include": ["./src/**/*"],
-  "exclude": [],
+  "exclude": ["./node_modules"],
   "compileOnSave": false
 }

@@ -1,8 +1,17 @@
-import PageLayout from './components/pageLayout/index'
+import Header from './components/header'
+import MenuLeft from './components/menuLeft'
+import Container from './components/container'
 import './style.less'
+import './app.less'
 
 export default function App() {
   return (
-    <PageLayout></PageLayout>
+    <div className='cookCode-body'>
+      <Header></Header>
+      <div className='cookCode-main'>
+        <MenuLeft />
+        <Container></Container>
+      </div>
+    </div>
   )
 }

@@ -1,18 +1,15 @@
-type Iinit = {
-  type: 'phone' | 'desktop'
-  phoneConfig: {
-    width: number
-    height: number
-  }
-  renderData?: unknown
-}
+import { Iinit } from './types';
 
 const init: Iinit = {
-  type: 'phone',
-  phoneConfig: {
-    width: 263,
-    height: 467
-  }
-}
+	type: 'phone',
+	phoneConfig: {
+		width: 263,
+		height: 467,
+	},
+	desktopConfig: {
+		width: 563,
+		height: 767,
+	},
+};
 
-export default init
+export default init;

@@ -1,6 +1,5 @@
-import { createContext } from 'react'
-import init from './init'
+import { createContext } from 'react';
 
-const context = createContext(init)
+const context = createContext<unknown>({});
 
-export default context
+export default context;

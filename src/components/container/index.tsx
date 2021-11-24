@@ -1,15 +1,19 @@
-import { useState } from 'react'
-import './index.less'
+import { useContext } from 'react';
+import context from '../../store/context';
+import './index.less';
 
-const preCls = 'cookCode-container'
+const preCls = 'cookCode-container';
 
 export default function Container() {
 
-  return <div className={`${preCls}`}>
-    <div className={`${preCls}-main`}>
-      <div className={`${preCls}-phone`}>
+	// const [ state, dispatch ] = useContext(context)
 
-      </div>
-    </div>
-  </div>
+	console.info(useContext(context))
+	return (
+		<div className={`${preCls}`}>
+			<div className={`${preCls}-main`}>
+				<div className={`${preCls}-phone`}></div>
+			</div>
+		</div>
+	);
 }

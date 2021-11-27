@@ -3,12 +3,19 @@ import { Iinit } from './types';
 const init: Iinit = {
 	type: 'phone',
 	phoneConfig: {
-		width: 263,
-		height: 467,
+		width: 375,
+		height: 667,
+		scale: 1,
 	},
 	desktopConfig: {
-		width: 563,
-		height: 767,
+		width: 1920,
+		height: 1080,
+		scale: 1,
+	},
+	render: {
+		histroyIndex: 0,
+		data: {},
+		dataHistory: [],
 	},
 };
 

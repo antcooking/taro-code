@@ -1,7 +1,7 @@
 import React, { useCallback, useReducer } from 'react';
 import context from './context';
 import init from './init';
-import { Iinit, Iaction, IReducer } from './types';
+import { Iinit, Iaction, IReducer, IrData } from './types';
 
 const Provider_ = context.Provider;
 const RENDER_DATA_LIMIT = 100;
@@ -13,10 +13,12 @@ export function Provider(props: { children: React.ReactNode | JSX.Element }): JS
 			default:
 				return state;
 			case 'data-next':
-				if (state.render.histroyIndex < state.render.dataHistory.length - 1) {
+			case 'data-next':
+				if (state.render.dataHistory.length && state.render.histroyIndex < state.render.dataHistory.length - 1) {
 					const originRender = {
 						...state.render,
-						histroyIndex: state.render.histroyIndex - 1,
+						histroyIndex: state.render.histroyIndex + 1,
+						data: state.render.dataHistory[state.render.histroyIndex + 1] as IrData
 					};
 
 					return {
@@ -28,11 +30,13 @@ export function Provider(props: { children: React.ReactNode | JSX.Element }): JS
 				return {
 					...state,
 				};
+
 			case 'data-prev':
 				if (state.render.histroyIndex !== 0) {
 					const originRender = {
 						...state.render,
 						histroyIndex: state.render.histroyIndex - 1,
+						data: state.render.dataHistory[state.render.histroyIndex - 1] as IrData
 					};
 
 					return {
@@ -44,26 +48,33 @@ export function Provider(props: { children: React.ReactNode | JSX.Element }): JS
 				return {
 					...state,
 				};
+
 			case 'data-update':
 				const originRender = state.render;
-				originRender.data = {
+
+				originRender.data = JSON.parse(JSON.stringify({
 					...originRender.data,
 					...payload,
-				};
-				if (state.render.histroyIndex !== 0) {
-					originRender.dataHistory = originRender.dataHistory.slice(state.render.histroyIndex);
-				}
-				// @ts-ignore
-				originRender.dataHistory.push(originRender.data);
+				}));
 
 				if (originRender.dataHistory.length >= RENDER_DATA_LIMIT) {
 					originRender.dataHistory.splice(0, originRender.dataHistory.length - 10)
 				}
 
+				if (state.render.histroyIndex !== 0) {
+					originRender.dataHistory = originRender.dataHistory.slice(state.render.histroyIndex);
+					originRender.histroyIndex = 0
+				}
+				// @ts-ignore
+				originRender.dataHistory.unshift({ ...originRender.data });
+
+				console.info(originRender.dataHistory);
+
 				return {
 					...state,
 					render: originRender,
 				};
+
 			case 'config':
 				if (state.type === 'phone') {
 					return {

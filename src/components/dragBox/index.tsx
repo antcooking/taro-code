@@ -1,6 +1,7 @@
 import React, { useCallback, useContext } from 'react';
 import context from '../../store/context';
 import { useDrag } from 'react-dnd';
+import deepCopy from '../../utils/deepcopy';
 
 export default function Box(params: {
   data: any,
@@ -27,7 +28,8 @@ export default function Box(params: {
   }));
 
   const commonAction = useCallback(function (item) {
-    const data = JSON.parse(JSON.stringify(state.render.data.data))
+    const data = deepCopy(state.render.data.data)
+    item.id = new Date().getTime()
     data.push(item)
     dispatch({
       type: 'data-update',

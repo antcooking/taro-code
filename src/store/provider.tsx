@@ -12,9 +12,9 @@ export function Provider(props: { children: React.ReactNode | JSX.Element }): JS
 		switch (type) {
 			default:
 				return state;
-			case 'data-next':
-			case 'data-next':
-				if (state.render.dataHistory.length && state.render.histroyIndex < state.render.dataHistory.length - 1) {
+			// case 'data-next':
+			case 'data-prev':
+				if (state.render.dataHistory.length && state.render.histroyIndex <= state.render.dataHistory.length - 1) {
 					const originRender = {
 						...state.render,
 						histroyIndex: state.render.histroyIndex + 1,
@@ -31,7 +31,7 @@ export function Provider(props: { children: React.ReactNode | JSX.Element }): JS
 					...state,
 				};
 
-			case 'data-prev':
+			case 'data-next':
 				if (state.render.histroyIndex !== 0) {
 					const originRender = {
 						...state.render,
@@ -67,8 +67,6 @@ export function Provider(props: { children: React.ReactNode | JSX.Element }): JS
 				}
 				// @ts-ignore
 				originRender.dataHistory.unshift({ ...originRender.data });
-
-				console.info(originRender.dataHistory);
 
 				return {
 					...state,

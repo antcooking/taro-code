@@ -1,11 +1,11 @@
 import { useCallback } from 'react';
 import { Icontext } from '../../store/types';
-import update from 'immutability-helper';
 import deepCopy from '../../utils/deepcopy';
 import Box from './box'
 
 export default function (con: Icontext): JSX.Element {
-  const { state: { render: { data: { data } } }, dispatch } = con
+  const { state: { render }, dispatch } = con
+  const data = render.data?.data || []
 
   const moveBoxAction = useCallback((dragIndex, hoverIndex) => {
     const dragBox = data[dragIndex];

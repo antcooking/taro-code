@@ -11,8 +11,8 @@ const baseList = [
 		type: 'div',
 		style: {
 			border: '1px solid #333',
-			height: 30,
-			width: 120,
+			height: 60,
+			width: 240,
 		}
 	},
 	{

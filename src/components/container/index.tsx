@@ -24,8 +24,9 @@ export default function Container() {
     const scaleLast = VIEW_SCALE * state.phoneConfig.scale
     return {
       style: {
-        width: state.phoneConfig.width * scaleLast,
-        height: state.phoneConfig.height * scaleLast,
+        width: state.phoneConfig.width,
+        height: state.phoneConfig.height,
+        transform: `scale(${scaleLast})`
       }
     }
   }, [state])

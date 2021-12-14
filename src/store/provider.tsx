@@ -2,6 +2,7 @@ import React, { useCallback, useReducer } from 'react';
 import context from './context';
 import init from './init';
 import { Iinit, Iaction, IReducer, IrData } from './types';
+import deepCopy from '../utils/deepcopy'
 
 const Provider_ = context.Provider;
 const RENDER_DATA_LIMIT = 100;
@@ -12,7 +13,6 @@ export function Provider(props: { children: React.ReactNode | JSX.Element }): JS
 		switch (type) {
 			default:
 				return state;
-			// case 'data-next':
 			case 'data-prev':
 				if (state.render.dataHistory.length && state.render.histroyIndex <= state.render.dataHistory.length - 1) {
 					const originRender = {
@@ -52,21 +52,18 @@ export function Provider(props: { children: React.ReactNode | JSX.Element }): JS
 			case 'data-update':
 				const originRender = state.render;
 
-				originRender.data = JSON.parse(JSON.stringify({
+				originRender.data = {
 					...originRender.data,
 					...payload,
-				}));
+				};
 
 				if (originRender.dataHistory.length >= RENDER_DATA_LIMIT) {
 					originRender.dataHistory.splice(0, originRender.dataHistory.length - 10)
 				}
 
-				if (state.render.histroyIndex !== 0) {
-					originRender.dataHistory = originRender.dataHistory.slice(state.render.histroyIndex);
-					originRender.histroyIndex = 0
-				}
+				originRender.histroyIndex = 0
 				// @ts-ignore
-				originRender.dataHistory.unshift({ ...originRender.data });
+				originRender.dataHistory.unshift(deepCopy(originRender.data));
 
 				return {
 					...state,

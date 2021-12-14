@@ -1,5 +1,4 @@
 import { useContext, useMemo } from 'react';
-import { useDrop } from 'react-dnd';
 import context from '../../store/context';
 import DataRender from '../dataRender';
 import './index.less';
@@ -8,15 +7,6 @@ const preCls = 'cookCode-container';
 const VIEW_SCALE = 0.66
 
 export default function Container() {
-
-  const [_, drop] = useDrop(() => ({
-    accept: 'box',
-    drop: () => ({ name: 'Dustbin' }),
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-      canDrop: monitor.canDrop(),
-    }),
-  }));
 
   const { state, dispatch } = useContext(context)
 
@@ -36,7 +26,6 @@ export default function Container() {
       <div className={`${preCls}-main`}>
         <div
           className={`${preCls}-phone`}
-          ref={drop}
           role={'Dustbin'}
           {...phoneStyle}
         >

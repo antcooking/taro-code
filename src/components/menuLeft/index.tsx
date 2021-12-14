@@ -1,5 +1,8 @@
-import DragBox from '../dragBox';
+import { useCallback, useContext } from 'react'
 import { Tabs } from 'antd';
+import { PlusSquareOutlined } from '@ant-design/icons';
+import deepCopy from '../../utils/deepcopy';
+import context from '../../store/context';
 import './index.less';
 
 const TabPane = Tabs.TabPane;
@@ -11,8 +14,8 @@ const baseList = [
 		type: 'div',
 		style: {
 			border: '1px solid #333',
-			height: 60,
-			width: 240,
+			height: 30,
+			width: 160,
 		}
 	},
 	{
@@ -25,21 +28,38 @@ const baseList = [
 
 export default function MenuLeft() {
 
+	const { dispatch, state } = useContext(context)
+
+  const commonAction = function (item:any) {
+    const data = deepCopy(state.render.data.data)
+    item.id = new Date().getTime()
+    data.push(item)
+    dispatch({
+      type: 'data-update',
+      payload: {
+        data
+      }
+    })
+  }
+
 	return <div className={`${preCls}`}>
 		<Tabs tabPosition="left">
 			<TabPane tab="基础组件" key="1">
 				<div className={`${preCls}-compbox`}>
 					{baseList.map((item, index) => (
-						<DragBox
+						<div
 							className={`${preCls}-common-component`}
-							data={item}
 							key={item.type + index}
 						>
 							{item.type}
-						</DragBox>
+							<PlusSquareOutlined 
+								className={`${preCls}-canvas-add`}
+								onClick={() => commonAction(item)}
+							/>
+						</div>
 					))}
 				</div>
 			</TabPane>
 		</Tabs>
-	</div>;
+	</div>
 }

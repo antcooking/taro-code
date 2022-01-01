@@ -1,4 +1,4 @@
-import { useCallback, useContext } from 'react'
+import { useContext } from 'react'
 import { Tabs } from 'antd';
 import { PlusSquareOutlined } from '@ant-design/icons';
 import deepCopy from '../../utils/deepcopy';
@@ -13,9 +13,8 @@ const baseList = [
 	{
 		type: 'div',
 		style: {
-			border: '1px solid #333',
-			height: 30,
-			width: 160,
+			minHeight: 60,
+			width: '100%',
 		}
 	},
 	{
@@ -31,7 +30,7 @@ export default function MenuLeft() {
 	const { dispatch, state } = useContext(context)
 
   const commonAction = function (item:any) {
-    const data = deepCopy(state.render.data.data)
+    const data = state.render.data.data
     item.id = new Date().getTime()
     data.push(item)
     dispatch({

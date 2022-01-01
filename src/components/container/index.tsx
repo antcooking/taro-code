@@ -4,7 +4,7 @@ import DataRender from '../dataRender';
 import './index.less';
 
 const preCls = 'cookCode-container';
-const VIEW_SCALE = 0.66
+const VIEW_SCALE = 0.7
 
 export default function Container() {
 

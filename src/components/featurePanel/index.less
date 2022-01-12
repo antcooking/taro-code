@@ -7,4 +7,38 @@
 	overflow-y: scroll;
 	width: @feature-pannel-width;
 	border-top: 1px solid #eee;
+	padding-left: 18px;
+	padding-right: 18px;
+	padding-top: 4px;
+	user-select: none;
+
+	.ant-tabs-tabpane {
+		height: calc(100vh - @header-height - 60);
+		overflow-y: scroll;
+	}
+
+	.ant-form-item-label {
+		min-width: 80px;
+		text-align: left;
+	}
+
+	.ant-tabs {
+		height: 100%;
+	}
+
+	.ant-tabs-nav .ant-tabs-tab {
+		padding: 4px 6px;
+	}
+
+	.ant-tabs-tab-btn {
+		color: @primary-color !important;
+	}
+
+	.ant-tabs-ink-bar {
+		background-color: @primary-color !important;
+	}
+
+	.ant-tabs-tab {
+		border-bottom: 1px dashed #f0f0f0;
+	}
 }

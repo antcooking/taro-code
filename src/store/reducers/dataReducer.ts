@@ -6,7 +6,7 @@ const reducers: IReducer = function (state: Iinit, action: Iaction): any {
   const { type, payload } = action;
   switch (type) {
     default:
-      return state;
+      return { ...state };
     case 'data-prev':
       if (state.render.dataHistory.length && state.render.histroyIndex <= state.render.dataHistory.length - 1) {
         const originRender = {

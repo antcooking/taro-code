@@ -7,7 +7,9 @@ export type Iaction = {
 	| 'data-next'
 	| 'config'
 	| 'setting-drawer'
-	payload?: Record<string, unknown>;
+	| 'featurePannel-update'
+	| 'config-mode'
+	payload?: Record<string, any>;
 };
 
 export type IReducer = React.Reducer<Iinit, Iaction>;
@@ -19,31 +21,26 @@ export type Icontext = {
 
 export type IrData = {
 	title: string;
-	data: Array<Record<string, unknown>>;
+	data: Array<Record<string, any>>;
+	style: Record<string, any>,
 }
 
-export type IsettingDrawerConfig = {
-	with?: number
-	height?: number
-	className?: string
-} & Record<string, unknown>
-
 export type Iinit = {
+	mode: 'edite' | 'preview';
 	type: 'phone' | 'desktop';
-	settingDrawer?: {
-		visible: boolean;
-		config: Record<string, unknown>;
+	featurePannel?: {
+		config: Record<string, any>;
 	}
 	phoneConfig: {
 		width: number;
 		height: number;
 		scale: number;
-	} & Record<string, unknown>;
+	} & Record<string, any>;
 	desktopConfig: {
 		width: number;
 		height: number;
 		scale: number;
-	} & Record<string, unknown>;
+	} & Record<string, any>;
 	render: {
 		data: IrData;
 		dataHistory: Array<IrData> | [];

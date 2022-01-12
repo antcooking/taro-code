@@ -41,9 +41,6 @@ export default function Header() {
 		dispatch({ type: 'data-prev' })
 	}, [])
 
-	console.info(state, '((state))')
-
-
 	return (
 		<div className={`${preCls}`}>
 			<div className={`${preCls}-title`}>CookCode</div>

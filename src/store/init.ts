@@ -1,6 +1,7 @@
 import { Iinit } from './types';
 
 const init: Iinit = {
+  mode: 'edite',
   type: 'phone',
   phoneConfig: {
     width: 375,
@@ -17,6 +18,10 @@ const init: Iinit = {
     data: {
       title: '',
       data: [],
+      style: {
+        fontSize: 14,
+        lineHeight: '30px',
+      },
     },
     dataHistory: [],
   },

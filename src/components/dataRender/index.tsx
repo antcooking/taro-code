@@ -1,19 +1,18 @@
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { isValidElement, useCallback, useContext, useEffect } from 'react';
 import { Icontext } from '../../store/types';
 import { dragContext } from '../../utils/drag';
 import type { Icontext as IDragContext } from '../../utils/drag';
-import {
-	ArrowUpOutlined,
-	ArrowDownOutlined,
-	ArrowLeftOutlined,
-	ArrowRightOutlined,
-	DeleteOutlined,
-} from '@ant-design/icons';
+import { ArrowUpOutlined, ArrowDownOutlined, DeleteOutlined } from '@ant-design/icons';
 import deepCopy from '../../utils/deepcopy';
 import classNames from 'classnames';
 import './index.less';
 
 const preCls = 'cookCode-dataRender';
+const placeholderElementStyle = {
+	padding: 4,
+	marginBottom: 4,
+	marginTop: 4,
+};
 
 export default function (con: Icontext): JSX.Element {
 	const {
@@ -23,14 +22,16 @@ export default function (con: Icontext): JSX.Element {
 	const { setDragData, dragData } = useContext(dragContext);
 
 	const data = render.data?.data || [];
+	const previewing = render.mode === 'preview';
 
 	useEffect(function () {
-		const draftData = localStorage.getItem('DRAFT_DATA');
+		const draftData: any = localStorage.getItem('DRAFT_DATA');
 		if (draftData) {
 			dispatch({
 				type: 'data-update',
 				payload: {
-					data: JSON.parse(draftData),
+					data: JSON.parse(draftData).data,
+					props: JSON.parse(draftData).props,
 				},
 			});
 		}
@@ -49,16 +50,45 @@ export default function (con: Icontext): JSX.Element {
 
 	const onDrop = useCallback(
 		function () {
+			if (previewing) return;
 			if (dragData.actionData) {
-				commonAction(dragData.actionData);
+				const t = dragData.actionData;
+				commonAction(t);
+				setDragData();
 			}
 		},
-		[dragData.actionData]
+		[dragData.actionData, previewing]
 	);
 
 	const onDragOver = useCallback(function (e) {
 		e.preventDefault();
 	}, []);
+
+	const insertPlaceholder = function (dd: any) {
+		let item = [...dd];
+		if (!dragData.targetId) return item;
+		if (
+			dragData.actionData &&
+			dragData.targetId === -1 &&
+			dragData.targetPath?.length === 1 &&
+			dragData.insertIndex !== -1
+		) {
+			if (item) {
+				item.splice(dragData.insertIndex as number, 0, {
+					id: -999,
+					type: 'div',
+					props: {
+						children: [dragData.actionData?.['name'] + '占位中...'],
+						style: placeholderElementStyle,
+					},
+				});
+			}
+		}
+
+		return item;
+	};
+
+	const previewStyle = !previewing ? { paddingBottom: 100 } : {};
 
 	return (
 		<div
@@ -66,9 +96,13 @@ export default function (con: Icontext): JSX.Element {
 			id="renderContainer"
 			onDrop={onDrop}
 			onDragOver={onDragOver}
+			style={{
+				...render.data.props.style,
+				...previewStyle,
+			}}
 		>
 			{deepRender({
-				data: data,
+				data: insertPlaceholder(data),
 				path: [-1],
 				con,
 				dragCon: {
@@ -85,198 +119,222 @@ function deepRender(params: {
 	path: Array<number>;
 	dragCon: IDragContext;
 	con: Icontext;
-	placeholder?: React.ReactNode;
 }) {
-	const { data, path, dragCon, placeholder, con } = params;
-	if ((data && (data.length === 0 || !data[0]) && !!placeholder) || (!data && !!placeholder)) {
-		return placeholder;
-	}
-	if (!data) return undefined;
-	// const [placeholderDom,setPlaceholderDom] = useState<any>(null)
+	const { data, path, dragCon, con } = params;
 	const { setDragData, dragData } = dragCon;
 
 	const { state, dispatch } = con;
+	const { mode } = state.render;
+	const previewing = mode === 'preview';
 
 	const onDragOver = function (index: number, e: any, item: any) {
-		throllter(function () {
-			e.stopPropagation();
-			e.preventDefault();
-			setDragData({
-				targetId: item.id,
-			});
-		})();
-	};
-
-	const onDragLeave = function (index: number, e: any, item: any) {
 		e.stopPropagation();
-		setDragData({
-			targetId: -1,
-		});
+		e.preventDefault();
+		if (previewing) return;
+		if (item.id === -999) return;
+		if (dragData.actionData?.['id'] === item.id) return;
+		const rect = document
+			.getElementById(`data-item${path.concat(index).join(',')}`)
+			?.getBoundingClientRect();
+		const itemRectTop = rect?.top;
+		const itemRectHeight = rect?.height;
+		const res: any = {};
+		if (itemRectTop && e.clientY - itemRectTop < 14) {
+			res.insertIndex = index;
+			res.targetId = item.parent ? item.parent.id : -1;
+			res.targetPath = item.parent ? path : [-1];
+		} else if (itemRectHeight && itemRectTop && e.clientY > itemRectTop + itemRectHeight - 14) {
+			res.insertIndex = index + 1;
+			res.targetId = item.parent ? item.parent.id : -1;
+			res.targetPath = item.parent ? path : [-1];
+		} else {
+			res.insertIndex = 0;
+			res.targetId = item.id;
+			res.targetPath = path.concat(index);
+		}
+		// console.info(res, 'res');
+		setDragData(res);
 	};
 
 	const setActive = function (e: any, item: any, index: number | null) {
+		if (previewing) return;
 		if (e) e.stopPropagation();
-		if (!item) {
-			return dispatch({
+		const { renderData } = state.featurePannel || {};
+		if (index === null) {
+			dispatch({
 				type: 'featurePannel-update',
 				payload: {
-					config: {
-						renderData: {},
-						activePath: null,
-					},
+					type: '',
+					activePath: [],
+				},
+			});
+		} else {
+			dispatch({
+				type: 'featurePannel-update',
+				payload: {
+					type: renderData && renderData.id === item.id ? '' : item.type,
+					activePath: renderData && renderData.id === item.id ? [] : path.concat(index),
 				},
 			});
 		}
-		// @ts-ignore
-		const domInstance = document.getElementById(`data-item${path.concat(index).join(',')}`);
-		if (!domInstance) return;
-		item.style = {
-			...item.style,
-			paddingRight: item.style.paddingRight || item.style.padding || 0,
-			paddingTop: item.style.paddingTop || item.style.padding || 0,
-			paddingLeft: item.style.paddingLeft || item.style.padding || 0,
-			paddingBottom: item.style.paddingBottom || item.style.padding || 0,
-		};
-
-		if (item.style.display !== 'inline-block') {
-			item.style = {
-				...item.style,
-				marginTop: item.style.marginTop || item.style.margin || 0,
-				marginLeft: item.style.marginLeft || item.style.margin || 0,
-				marginBottom: item.style.marginBottom || item.style.margin || 0,
-				marginRight: item.style.marginRight || item.style.margin || 0,
-				width: domInstance?.offsetWidth,
-				height: domInstance?.offsetHeight,
-			};
-		}
-
-		dispatch({
-			type: 'featurePannel-update',
-			payload: {
-				config: {
-					renderData: item,
-					activePath: index !== null ? path.concat(index) : null,
-				},
-			},
-		});
 	};
 
-	const { config } = state?.featurePannel || {};
+	const featurePannel = state?.featurePannel || {};
 
-	const onDrop = function (e: any, index: number) {
+	const onDrop = function (e: any) {
+		if (previewing) return;
 		e.stopPropagation();
-		setDragData({
-			targetId: -1,
-		});
-		let targetKeys: Array<number> = path.concat(index);
+		if (!dragData.actionData) return;
+		let targetKeys = dragData.targetPath as Array<number>;
 		let origin = state.render.data.data;
 		let target: any = origin;
 
-		targetKeys.forEach((t, index) => {
-			if (t !== -1 && index > 0) {
-				// @ts-ignore
-				if (index === 1) {
-					if (target[t]?.['style']) {
-						// @ts-ignore
-						target[t].style = {
-							// @ts-ignore
-							...target[t].style,
-							padding: 20,
-						};
+		if (targetKeys.length === 1 && targetKeys[0] === -1) {
+			target = target;
+		} else {
+			targetKeys.forEach((t, index) => {
+				if (t !== -1 && index > 0) {
+					if (index === 1) {
+						target = target[t];
+					} else if (target.props.children) {
+						target = target.props.children[t];
 					}
-					target = target[t];
-				} else if (target.children) {
-					if (target.children && target.children[t]?.['style']) {
-						// @ts-ignore
-						target.children[t].style = {
-							// @ts-ignore
-							...target.children[t].style,
-							padding: 20,
-						};
-					}
-					target = target.children[t];
 				}
-			}
-		});
+			});
+		}
 
-		if (!target.hasNoChildren && target.elementType !== 'inline') {
+		if (typeof target === 'string' || !target) return;
+
+		if (!target.hasNoChildren) {
 			const _data = dragData.actionData;
-			if (_data?.['style'] && _data?.['style']?.['width'] === 375) {
-				// @ts-ignore
-				_data.style = {
-					// @ts-ignore
-					..._data.style,
-					width: 'auto',
-				};
-			}
-
 			if (_data) {
 				if (target) _data['parent'] = deepCopy(target);
-				if (!target?.['children']) target.children = [];
-				target.children.push(_data);
+				if (Array.isArray(target)) {
+					target.splice(dragData.insertIndex as number, 0, dragData.actionData);
+				} else {
+					if (!target.props?.['children']) target.props.children = [];
+					target.props.children.splice(dragData.insertIndex, 0, dragData.actionData);
+				}
+
 				dispatch({
 					type: 'data-update',
 					payload: {
 						data: origin,
 					},
 				});
+
+				setDragData();
 			}
 		}
 	};
 
+	const onDragStart = function (index: number, e: any, item: any) {
+		e.stopPropagation();
+		if (previewing) return;
+		setTimeout(() => {
+			setDragData({
+				actionData: item,
+			});
+			dispatch({
+				type: 'featurePannel-update',
+				payload: {
+					activePath: [],
+					type: '',
+				},
+			});
+			let targetKeys = path;
+			let origin = state.render.data.data;
+			let target: any = origin;
+			targetKeys.forEach((t, index) => {
+				if (t !== -1 && index > 0) {
+					if (index === 1) {
+						target = target[t];
+					} else if (target.props.children) {
+						target = target.props.children[t];
+					}
+				}
+			});
+
+			if (Array.isArray(target)) {
+				target.splice(index, 1);
+			} else {
+				target.props.children.splice(index, 1);
+			}
+
+			dispatch({
+				type: 'data-update',
+				payload: {
+					data: origin,
+				},
+			});
+		}, 33);
+	};
+
+	const insertPlaceholder = function (item: any) {
+		if (typeof item.props.children === 'string') return item.props.children;
+		if (!item.props.children) item.props.children = [];
+		const res = [...item.props.children];
+		if (item && item.id === dragData.targetId && dragData.actionData) {
+			res.splice(dragData.insertIndex as number, 0, {
+				id: -999,
+				type: 'div',
+				props: {
+					children: [dragData?.actionData?.['name'] + '占位中'],
+					style: placeholderElementStyle,
+				},
+			});
+		}
+
+		return res || null;
+	};
+
+	const deleteChildren = function (item: any) {
+		const propsNew: any = {};
+		Object.keys(item).map((key) => {
+			if (key !== 'children') {
+				propsNew[key] = item[key];
+			}
+		});
+
+		return propsNew;
+	};
+
 	const itemRender = function (item: any, index: number, proxyMargin?: string) {
 		let style_dl: any = {};
-		if (proxyMargin) {
-			Object.keys(item.style).forEach((key) => {
-				if (!key.includes('margin')) style_dl[key] = item.style[key];
+		if (proxyMargin && item.props.style) {
+			Object.keys(item.props.style).forEach((key) => {
+				if (!key.includes('margin')) style_dl[key] = item.props.style[key];
 			});
 		}
 		return (
 			<item.type
-				style={proxyMargin ? style_dl : item.style}
-				key={`${preCls}-item${index}`}
+				{...deleteChildren(item.props)}
+				style={proxyMargin ? style_dl : item.props.style}
+				key={`${preCls}-item${index}#`}
 				className={classNames({
-					[`${preCls}-common-desc`]: true,
-					[`${preCls}-common-desc-dragTarget`]: dragData.targetId === item.id,
+					[`${preCls}-common-desc`]: mode === 'edite',
 					[`${preCls}-common-desc-active`]:
-						config &&
-						config['activePath'] &&
-						config['activePath'].join(',') === path.concat(index).join(','),
+						featurePannel['activePath'] &&
+						mode === 'edite' &&
+						featurePannel['activePath'].join(',') === path.concat(index).join(','),
 				})}
 				id={`data-item${path.concat(index).join(',')}`}
+				onDrop={onDrop}
+				onDragStart={(e: any) => onDragStart(index, e, item)}
 				onDragOver={(e: any) => onDragOver(index, e, item)}
-				onDragLeave={(e: any) => onDragLeave(index, e, item)}
-				onDrop={(e: any) => onDrop(e, index)}
 				onClick={(e: any) => setActive(e, item, index)}
-				{...item.props}
+				draggable={mode === 'edite'}
 			>
 				{item.hasNoChildren
 					? undefined
 					: deepRender({
-							data: item.children,
+							data: insertPlaceholder(item),
 							path: path.concat(index),
 							dragCon,
 							con,
-							placeholder: item.placeholder,
 					  })}
 			</item.type>
 		);
-	};
-
-	const getParentLayoutMode = function (parent: any, item: any) {
-		if (!parent) {
-			if (item.elementType === 'inline') return 'horizontal';
-			return 'vertical';
-		}
-		const style = parent.style;
-		if (style.display === 'flex' && style.flexDirection === 'column') {
-			return 'vertical';
-		} else if (style.display === 'flex') {
-			return 'horizontal';
-		} else {
-			if (item.elementType === 'inline') return 'horizontal';
-			return 'vertical';
-		}
 	};
 
 	const deleteItem = function (tPath: number[], e: any) {
@@ -292,11 +350,11 @@ function deepRender(params: {
 					if (index === 0) {
 						target = target[item];
 					} else {
-						target = target['children'][item];
+						target = target.props['children'][item];
 					}
 				}
 			});
-			target.children.splice(tp[tp.length - 1], 1);
+			target.props.children.splice(tp[tp.length - 1], 1);
 		}
 
 		setActive(e, null, null);
@@ -311,6 +369,7 @@ function deepRender(params: {
 
 	const sortItem = function (tPath: number[], sortIndex: number, e: any, item: any) {
 		e.stopPropagation();
+		if (previewing) return;
 		let origin: any = state.render.data.data;
 		let target: any = origin;
 		if (tPath.length === 2 && tPath[1] !== undefined) {
@@ -325,15 +384,15 @@ function deepRender(params: {
 					if (index === 0) {
 						target = target[item];
 					} else {
-						target = target['children'][item];
+						target = target.props?.['children'][item];
 					}
 				}
 			});
-			if (sortIndex < 0 || sortIndex > target.children.length - 1) return;
-			const temp = target.children[tp[tp.length - 1] as any];
+			if (sortIndex < 0 || sortIndex > target.props.children.length - 1) return;
+			const temp = target.props.children[tp[tp.length - 1] as any];
 
-			target.children[tp[tp.length - 1] as any] = target.children[sortIndex];
-			target.children[sortIndex] = temp;
+			target.props.children[tp[tp.length - 1] as any] = target.props.children[sortIndex];
+			target.props.children[sortIndex] = temp;
 		}
 
 		setActive(e, item, sortIndex);
@@ -346,85 +405,45 @@ function deepRender(params: {
 		});
 	};
 
+	if (!data) return undefined;
+	if (typeof data === 'string' || isValidElement(data)) return data;
+
 	return (
 		<>
-			{data.map((item: any, index: number) => (
-				<>
-					{config &&
-					config['activePath'] &&
-					config['activePath'].join(',') === path.concat(index).join(',') ? (
-						<div
-							key={`${preCls}-wrapper${index}${item.dragTime}`}
-							className={`${preCls}-wrapper`}
-							style={
-								item.elementType
-									? {
-											display: item.elementType,
-											marginTop: item.style.marginTop,
-											marginLeft: item.style.marginLeft,
-											marginRight: item.style.marginRight,
-											marginBottom: item.style.marginBottom,
-											width: item.width,
-									  }
-									: {
-											marginTop: item.style.marginTop,
-											marginLeft: item.style.marginLeft,
-											marginRight: item.style.marginRight,
-											marginBottom: item.style.marginBottom,
-											width: item.width,
-									  }
-							}
-						>
-							{item.elementType !== 'inline' ? (
-								<div className={`${preCls}-tools`}>
-									{getParentLayoutMode(item.parent, item) === 'vertical'
-										? [
-												<ArrowUpOutlined
-													onClick={(e) => sortItem(path.concat(index), index - 1, e, item)}
-												/>,
-												<ArrowDownOutlined
-													onClick={(e) => sortItem(path.concat(index), index + 1, e, item)}
-												/>,
-										  ]
-										: [
-												<ArrowLeftOutlined
-													onClick={(e) => sortItem(path.concat(index), index - 1, e, item)}
-												/>,
-												<ArrowRightOutlined
-													onClick={(e) => sortItem(path.concat(index), index + 1, e, item)}
-												/>,
-										  ]}
-									<DeleteOutlined onClick={(e) => deleteItem(path.concat(index), e)} />
+			{data.map((item: any, index: number) => {
+				if (typeof item !== 'string') {
+					return (
+						<>
+							{featurePannel['activePath'] &&
+							featurePannel['activePath'].join(',') === path.concat(index).join(',') ? (
+								<div
+									key={`${preCls}-wrapper${index}${item.dragTime}`}
+									className={`${preCls}-wrapper`}
+									style={{
+										marginTop: item.props.style.marginTop,
+										marginLeft: item.props.style.marginLeft,
+										marginRight: item.props.style.marginRight,
+										marginBottom: item.props.style.marginBottom,
+									}}
+								>
+									<div className={`${preCls}-tools`}>
+										<ArrowUpOutlined
+											onClick={(e) => sortItem(path.concat(index), index - 1, e, item)}
+										/>
+										<ArrowDownOutlined
+											onClick={(e) => sortItem(path.concat(index), index + 1, e, item)}
+										/>
+										<DeleteOutlined onClick={(e) => deleteItem(path.concat(index), e)} />
+									</div>
+									{itemRender(item, index, 'proxyMargin')}
 								</div>
 							) : (
-								''
+								itemRender(item, index)
 							)}
-							{itemRender(item, index, 'proxyMargin')}
-						</div>
-					) : (
-						itemRender(item, index)
-					)}
-				</>
-			))}
+						</>
+					);
+				} else return item;
+			})}
 		</>
 	);
-}
-
-function throllter(fn: any) {
-	let flag = true;
-	let timer: any;
-
-	return function (...args: any) {
-		if (flag) {
-			fn(...args);
-			flag = false;
-		}
-
-		if (!timer) {
-			timer = setTimeout(() => {
-				flag = true;
-				timer = null;
-			}, 30);
-		}
-	};
 }

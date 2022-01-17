@@ -2,12 +2,13 @@ import React, { createContext, useState, useCallback } from 'react';
 
 interface Idata {
 	targetId?: number;
-	actionData?: Record<string, any> | null;
+	insertIndex?: number;
+	actionData?: Record<string, any>;
 	targetPath?: number[];
 }
 export type Icontext = {
 	dragData: Idata;
-	setDragData: (data: Idata) => void;
+	setDragData: (data?: Idata) => void;
 };
 
 const dragContext = createContext<Icontext>({} as Icontext);
@@ -17,21 +18,31 @@ const Provider_ = dragContext.Provider;
 function DragProvider(props: { children: React.ReactNode | JSX.Element }): JSX.Element {
 	const [dragData, setDragData_] = useState<Idata>({
 		targetId: -1,
-		actionData: null,
-		targetPath: [],
+		actionData: undefined,
+		targetPath: [-1],
+		insertIndex: -1,
 	});
 
 	const setDragData = useCallback(
 		function (data) {
-			setDragData_({
-				...dragData,
-				...data,
-			});
+			if (data) {
+				setDragData_({
+					...dragData,
+					...data,
+				});
+			} else {
+				setDragData_({
+					targetId: -1,
+					actionData: undefined,
+					targetPath: [-1],
+					insertIndex: -1,
+				});
+			}
 		},
 		[dragData, setDragData_]
 	);
 
-	console.info(dragData, 'dragData');
+	// console.info(dragData.actionData, 'dragData*************************');
 
 	return <Provider_ value={{ dragData, setDragData }}>{props.children}</Provider_>;
 }

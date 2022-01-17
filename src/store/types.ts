@@ -9,6 +9,7 @@ export type Iaction = {
 	| 'setting-drawer'
 	| 'featurePannel-update'
 	| 'config-mode'
+	| 'page-update'
 	payload?: Record<string, any>;
 };
 
@@ -22,18 +23,19 @@ export type Icontext = {
 export type IrData = {
 	title: string;
 	data: Array<Record<string, any>>;
-	style: Record<string, any>,
+	props: {
+		style: Record<string, any>;
+	}
+	state: Record<string, any>;
 }
 
 export type Iinit = {
-	mode: 'edite' | 'preview';
 	type: 'phone' | 'desktop';
-	featurePannel?: {
-		config: Record<string, any>;
-	}
+	featurePannel: Record<string, any>;
+	componentsPannel: Array<Record<string, any>>;
 	phoneConfig: {
 		width: number;
-		height: number;
+		minHeight: number;
 		scale: number;
 	} & Record<string, any>;
 	desktopConfig: {
@@ -45,5 +47,6 @@ export type Iinit = {
 		data: IrData;
 		dataHistory: Array<IrData> | [];
 		histroyIndex: number;
+		mode: 'edite' | 'preview';
 	};
 };

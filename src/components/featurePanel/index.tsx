@@ -1,141 +1,171 @@
-import { Form, Tabs } from 'antd';
-import { useContext } from 'react';
+import { Form, Tabs, Upload } from 'antd';
+import Antd from './com/index';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import context from '../../store/context';
-import Stepper from './com/stepper';
 import './index.less';
+import deepCopy from '../../utils/deepcopy';
+import { rootFeature } from '../../config/rootFeature';
+import { render } from '@tarojs/taro';
 
 const preCls = 'cookCode-feature-pannel';
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
 
 export default function MenuLeft() {
-	const { dispatch, state } = useContext(context);
-	let currentData: any = {};
+	const {
+		state: {
+			featurePannel,
+			componentsPannel,
+			render: { data, mode },
+		},
+		dispatch,
+	} = useContext(context);
+	let target: any = data;
 
-	if (state.featurePannel) {
-		currentData = state.featurePannel.config['renderData'];
-	} else {
-		currentData = state.render.data;
-	}
+	const [_featurePannel, setFeaturePannel] = useState<any>(rootFeature);
 
-	const styleChange = function (key: string, value: number) {
-		let origin = state.render.data.data;
-		let target: any = origin;
+	useEffect(
+		function () {
+			if (featurePannel?.['activePath']?.length > 1) {
+				let componentsAll: any[] = [];
+				componentsPannel.forEach((item: any) => {
+					componentsAll = componentsAll.concat(item.data);
+				});
+				const res = componentsAll.find((item) => item.type === featurePannel['type']);
 
-		(state.featurePannel?.['config']?.['activePath']).forEach((t: number, index: number) => { 
-			if ((t !== -1) && index > 0) { 
-				if (index === 1) {
-					target = target[t]
-				} else if(target.children){
-					target = target.children[t]
+				setFeaturePannel(res.featurePannel);
+			} else {
+				setFeaturePannel(rootFeature);
+			}
+		},
+		[featurePannel, componentsPannel]
+	);
+
+	if (featurePannel?.['activePath']?.length > 0 && target) {
+		if (featurePannel?.['activePath']?.length === 1) {
+			target = target;
+		} else if (featurePannel?.['activePath']?.length > 1) {
+			featurePannel?.['activePath'].forEach((t: any, index: number) => {
+				if (t !== -1 && index > 0) {
+					if (index === 1) {
+						target = target.data[t];
+					} else if (target.props.children) {
+						target = target.props.children[t];
+					}
 				}
-			}
-		})
-
-		target.style = {
-			...target.style,
-			[key]: value
+			});
 		}
-
-		dispatch({
-			type: 'data-update',
-			payload: {
-				data: origin
-			}
-		})
-	};
-
-	let isInlineBlock = false;
-
-	if (
-		(currentData && currentData.elementType === 'inline') ||
-		!state?.featurePannel?.config?.['activePath']
-	) {
-		isInlineBlock = true;
 	}
+
+	const findProps = useCallback(
+		function (actionType: string) {
+			if (!actionType.includes('.')) {
+				return target.props[actionType];
+			} else {
+				let res: any = target.props;
+				actionType.split('.').forEach((ac) => {
+					res = res[ac];
+				});
+
+				return res;
+			}
+		},
+		[target]
+	);
+
+	const commonOnChange = useCallback(
+		function (e: any, actionType: string, type: string) {
+			console.info(e);
+			const __data = deepCopy(data);
+			let __target: any = __data;
+			if (featurePannel?.['activePath']?.length === 1) {
+				__target = __target;
+			} else if (featurePannel?.['activePath']?.length > 1) {
+				featurePannel?.['activePath'].forEach((t: any, index: number) => {
+					if (t !== -1 && index > 0) {
+						if (index === 1) {
+							__target = __target.data[t];
+						} else if (__target.props.children) {
+							__target = __target.props.children[t];
+						}
+					}
+				});
+			}
+
+			if (!actionType.includes('.')) {
+				if (['Input', 'RadioGroup', 'TextArea'].includes(type)) {
+					__target.props[actionType] = e.target.value;
+				} else {
+					__target.props[actionType] = e;
+				}
+			} else {
+				const actionTypeArr: any = actionType.split('.');
+				actionTypeArr.forEach((ac: any, index: number) => {
+					if (index < actionTypeArr.length - 1 && index !== 0) {
+						if (!__target[ac]) __target[ac] = {};
+						__target = __target[ac];
+					} else if (index === 0) {
+						__target = __target.props[ac];
+					}
+				});
+
+				__target[actionTypeArr[actionTypeArr.length - 1]] = [
+					'Input',
+					'RadioGroup',
+					'TextArea',
+				].includes(type)
+					? e.target.value
+					: e;
+			}
+			dispatch({
+				type: 'data-update',
+				payload: {
+					data: __data.data,
+					props: __data.props,
+				},
+			});
+		},
+		[data, dispatch, featurePannel]
+	);
 
 	return (
-		<div className={`${preCls}`}>
+		<div className={`${preCls}`} style={mode === 'preview' ? { width: 0 } : {}}>
+			<Upload />
 			<Tabs defaultActiveKey="1">
 				<TabPane tab="基础设置" key="1">
-					{!isInlineBlock
-						? [
-								<FormItem label="宽度">
-									<Stepper
-										value={currentData?.style?.width}
-										onChange={(value) => styleChange('width', value)}
-									/>
-								</FormItem>,
-								<FormItem label="高度">
-									<Stepper
-										value={currentData?.style?.height}
-										onChange={(value) => styleChange('height', value)}
-									/>
-								</FormItem>,
-								<FormItem label="外间距">
-									<FormItem label="上间距" style={{ marginLeft: 20 }}>
-										<Stepper
-											value={currentData?.style?.marginTop}
-											onChange={(value) => styleChange('marginTop', value)}
-										/>
+					{(_featurePannel?.baseSetting || []).map((item: any, index: number) => (
+						<div className="featurePannel-item" key={`featurePannel-item-${index}`}>
+							<div className="featurePannel-item-title">{item.name}</div>
+							{item.data.map((it: any, ind: number) => {
+								// @ts-ignore
+								const Controller = Antd[it.controller];
+								let ControllerProps: any = {
+									value: findProps(it.actionType),
+									onChange: (e: any) => commonOnChange(e, it.actionType, it.controller),
+								};
+								if (it.controller === 'Slider') {
+									ControllerProps.max = it.max;
+									ControllerProps.min = it.min;
+									ControllerProps.step = it.step;
+								}
+								if (it.controller === 'RadioGroup') {
+									ControllerProps.options = it.options;
+									ControllerProps.optionType = it.optionType;
+								}
+								return (
+									<FormItem label={it.name} key={`featurePannel-formitem${ind}`}>
+										<Controller {...ControllerProps} />
 									</FormItem>
-									<FormItem label="右间距" style={{ marginLeft: 20 }}>
-										<Stepper
-											value={currentData?.style?.marginRight}
-											onChange={(value) => styleChange('marginRight', value)}
-										/>
-									</FormItem>
-									<FormItem label="下间距" style={{ marginLeft: 20 }}>
-										<Stepper
-											value={currentData?.style?.marginBottom}
-											onChange={(value) => styleChange('marginBottom', value)}
-										/>
-									</FormItem>
-									<FormItem label="左间距" style={{ marginLeft: 20 }}>
-										<Stepper
-											value={currentData?.style?.marginLeft}
-											onChange={(value) => styleChange('marginLeft', value)}
-										/>
-									</FormItem>
-								</FormItem>,
-						  ]
-						: ''}
-					{state.featurePannel?.['config']?.['activePath'] ? (
-						<FormItem label="内间距">
-							<FormItem label="上间距" style={{ marginLeft: 20 }}>
-								<Stepper
-									value={currentData?.style?.paddingTop}
-									onChange={(value) => styleChange('paddingTop', value)}
-								/>
-							</FormItem>
-							<FormItem label="右间距" style={{ marginLeft: 20 }}>
-								<Stepper
-									value={currentData?.style?.paddingRight}
-									onChange={(value) => styleChange('paddingRight', value)}
-								/>
-							</FormItem>
-							<FormItem label="下间距" style={{ marginLeft: 20 }}>
-								<Stepper
-									value={currentData?.style?.paddingBottom}
-									onChange={(value) => styleChange('paddingBottom', value)}
-								/>
-							</FormItem>
-							<FormItem label="左间距" style={{ marginLeft: 20 }}>
-								<Stepper
-									value={currentData?.style?.paddingLeft}
-									onChange={(value) => styleChange('paddingLeft', value)}
-								/>
-							</FormItem>
-						</FormItem>
-					) : (
-						''
-					)}
+								);
+							})}
+						</div>
+					))}
+				</TabPane>
+				<TabPane tab="数据设置" key="4">
+					数据设置
 				</TabPane>
 				<TabPane tab="事件设置" key="2">
 					事件设置
-				</TabPane>
-				<TabPane tab="属性设置" key="3">
-					属性设置
 				</TabPane>
 			</Tabs>
 		</div>

@@ -6,41 +6,50 @@
 	box-sizing: border-box;
 	padding: 2px;
 	user-select: none;
+	position: relative;
 
 	&-main {
 		height: 100%;
 		background-color: #f0f0f0;
 		position: relative;
 		display: flex;
-		align-items: center;
 		justify-content: center;
+		overflow-y: scroll;
 	}
 	
 	&-phone {
-		width: 263px;
-		height: 467px;
 		background-color: #fff;
 		position: relative;
 		z-index: @canvas-zIndex;
-		overflow-y: scroll;
-		outline: 1px solid #ddd;
 		padding: 1px;
-		z-index: 9999;
+		z-index: 9;
 		border-radius: 4px;
-		box-sizing: content-box;
+		position: relative;
+		margin-top: 40px;
 	}
 
 	&-button-groups {
 		display: flex;
-		position: relative;
-		left: 0px;
-		bottom: 100px;
+		flex-direction: column;
+		position: absolute;
+		right: 50px;
+		bottom: 50px;
 		justify-content: flex-end;
 		z-index: 10000;
 
 		.button-item {
-			margin-right: 20px;
-			border-radius: 8px;
+			border-radius: 2px;
+			width: 26px;
+			height: 26px;
+			border: 1px solid @primary-color;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			cursor: pointer;
+
+			svg path {
+				fill: @primary-color;
+			}
 		}
 	}
 }

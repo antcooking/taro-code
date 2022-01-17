@@ -1,11 +1,18 @@
 import { Iinit } from './types';
+import { baseComponents } from '../config/baseComponents'
 
 const init: Iinit = {
-  mode: 'edite',
   type: 'phone',
+  featurePannel: {},
+  componentsPannel: [
+    {
+      name: '基础组件',
+      data: baseComponents
+    }
+  ],
   phoneConfig: {
     width: 375,
-    height: 667,
+    minHeight: 667,
     scale: 1,
   },
   desktopConfig: {
@@ -15,13 +22,17 @@ const init: Iinit = {
   },
   render: {
     histroyIndex: 0,
+    mode: 'edite',
     data: {
       title: '',
+      state: {},
       data: [],
-      style: {
-        fontSize: 14,
-        lineHeight: '30px',
-      },
+      props: {
+        style: {
+          fontSize: 14,
+          lineHeight: '30px',
+        },
+      }
     },
     dataHistory: [],
   },

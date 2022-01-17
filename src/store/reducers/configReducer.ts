@@ -4,7 +4,7 @@ const reducers: IReducer = function (state: Iinit, action: Iaction): Iinit {
   const { type, payload } = action;
   switch (type) {
     default:
-      return {  ...state };
+      return { ...state };
 
     case 'config':
       if (state.type === 'phone') {
@@ -15,7 +15,7 @@ const reducers: IReducer = function (state: Iinit, action: Iaction): Iinit {
             ...payload,
           } as {
             width: number;
-            height: number;
+            minHeight: number;
             scale: number;
           } & Record<string, unknown>,
         };
@@ -32,13 +32,6 @@ const reducers: IReducer = function (state: Iinit, action: Iaction): Iinit {
           } & Record<string, unknown>,
         };
       }
-      
-    case 'config-mode':
-      return {
-        ...state,
-        mode: state.mode === 'preview' ? 'edite' : 'preview'
-      }
-      
   }
 }
 

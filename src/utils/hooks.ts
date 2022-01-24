@@ -1,6 +1,6 @@
 import { useCallback, useRef, useEffect } from 'react'
 
-function useThrottle(fn: any, delay: number, dep = []) {
+function useThrottle(fn: any, delay: number, dep: any) {
   const { current } = useRef({ fn, timer: null });
   useEffect(function () {
     current.fn = fn;
@@ -16,7 +16,7 @@ function useThrottle(fn: any, delay: number, dep = []) {
        // @ts-ignore
       current.fn.call(this, ...args);
     }
-  }, dep);
+  }, dep || []);
 }
 
 export { 

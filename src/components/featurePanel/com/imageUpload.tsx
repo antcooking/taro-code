@@ -7,10 +7,11 @@ type Iprops = {
 	value?: string;
 	aspect?: number;
 	action?: string;
+	crop?: boolean;
 };
 
 const ImageUpload = (props: Iprops) => {
-	const { onChange, value, aspect = 2, action } = props;
+	const { onChange, value, aspect = 2, action, crop = false } = props;
 
 	const [fileList, setFileList] = useState<Array<any>>([]);
 
@@ -91,25 +92,40 @@ const ImageUpload = (props: Iprops) => {
 	}, []);
 
 	return (
-		<ImgCrop
-			quality={0.2}
-			rotate
-			aspect={aspect}
-			modalTitle="图片编辑"
-			modalCancel="取消"
-			modalOk="确认"
-		>
-			<Upload
-				customRequest={imageAction}
-				listType="picture-card"
-				fileList={fileList as any}
-				onChange={_onChange}
-				onPreview={onPreview}
-				maxCount={1}
-			>
-				{fileList.length < 1 && '+ 上传'}
-			</Upload>
-		</ImgCrop>
+		<>
+			{crop ? (
+				<ImgCrop
+					quality={0.2}
+					rotate
+					aspect={aspect}
+					modalTitle="图片编辑"
+					modalCancel="取消"
+					modalOk="确认"
+				>
+					<Upload
+						customRequest={imageAction}
+						listType="picture-card"
+						fileList={fileList as any}
+						onChange={_onChange}
+						onPreview={onPreview}
+						maxCount={1}
+					>
+						{fileList.length < 1 && '+ 上传'}
+					</Upload>
+				</ImgCrop>
+			) : (
+				<Upload
+					customRequest={imageAction}
+					listType="picture-card"
+					fileList={fileList as any}
+					onChange={_onChange}
+					onPreview={onPreview}
+					maxCount={1}
+				>
+					{fileList.length < 1 && '+ 上传'}
+				</Upload>
+			)}
+		</>
 	);
 };
 

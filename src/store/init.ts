@@ -1,5 +1,6 @@
 import { Iinit } from './types';
 import { baseComponents } from '../config/baseComponents'
+import { VantComponents } from '../config/vantCompents'
 
 const init: Iinit = {
   type: 'phone',
@@ -7,12 +8,18 @@ const init: Iinit = {
   componentsPannel: [
     {
       name: '基础组件',
-      data: baseComponents
-    }
+      data: baseComponents,
+      type: 'internal',
+    },
+    {
+      name: 'Vant组件',
+      data: VantComponents,
+      type: 'internal',
+    },
   ],
   phoneConfig: {
-    width: 375,
-    minHeight: 667,
+    width: 750,
+    minHeight: 1344,
     scale: 1,
   },
   desktopConfig: {

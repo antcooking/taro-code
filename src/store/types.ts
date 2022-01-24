@@ -3,13 +3,10 @@ import React from 'react';
 export type Iaction = {
 	type:
 	| 'data-update'
-	| 'data-prev'
-	| 'data-next'
-	| 'config'
-	| 'setting-drawer'
 	| 'featurePannel-update'
 	| 'config-mode'
 	| 'page-update'
+	| 'components-pannel'
 	payload?: Record<string, any>;
 };
 

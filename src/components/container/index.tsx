@@ -1,12 +1,13 @@
-import { useContext, useMemo } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
 import context from '../../store/context';
 import DataRender from '../dataRender';
 import { ExpandOutlined, CompressOutlined, SaveOutlined } from '@ant-design/icons';
 import './index.less';
 import { message } from 'antd';
+import { createCode } from '../../utils/codor';
 
 const preCls = 'cookCode-container';
-const VIEW_SCALE = 1;
+const VIEW_SCALE = 0.5;
 
 export default function Container() {
 	const { state, dispatch } = useContext(context);
@@ -18,7 +19,7 @@ export default function Container() {
 				style: {
 					width: state.phoneConfig.width,
 					minHeight: state.phoneConfig.minHeight,
-					transform: `scale(${scaleLast})`,
+					transform: `scale(${scaleLast}) translateY(-700px)`,
 				},
 			};
 		},
@@ -49,10 +50,20 @@ export default function Container() {
 			type: 'featurePannel-update',
 			payload: {
 				activePath: [],
+				activeId: undefined,
 				type: '',
 			},
 		});
 	};
+
+	useEffect(
+		function () {
+			if (state.render.data.data.length) {
+				createCode(state.render.data);
+			}
+		},
+		[state]
+	);
 
 	return (
 		<div className={`${preCls}`}>

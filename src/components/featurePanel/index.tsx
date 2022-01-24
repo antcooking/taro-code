@@ -33,7 +33,7 @@ export default function MenuLeft() {
 				});
 				const res = componentsAll.find((item) => item.type === featurePannel['type']);
 
-				setFeaturePannel(res.featurePannel);
+				if (res) setFeaturePannel(res.featurePannel);
 			} else {
 				setFeaturePannel(rootFeature);
 			}
@@ -74,8 +74,7 @@ export default function MenuLeft() {
 	);
 
 	const commonOnChange = useCallback(
-		function (e: any, actionType: string, type: string) {
-			console.info(e);
+		function (e: any, actionType: string, type: string, unit: string) {
 			const __data = deepCopy(data);
 			let __target: any = __data;
 			if (featurePannel?.['activePath']?.length === 1) {
@@ -116,6 +115,10 @@ export default function MenuLeft() {
 				].includes(type)
 					? e.target.value
 					: e;
+
+				if (unit) {
+					__target[actionTypeArr[actionTypeArr.length - 1]] += unit;
+				}
 			}
 			dispatch({
 				type: 'data-update',
@@ -139,9 +142,13 @@ export default function MenuLeft() {
 							{item.data.map((it: any, ind: number) => {
 								// @ts-ignore
 								const Controller = Antd[it.controller];
+								let value = findProps(it.actionType);
+								if (typeof value === 'string' && value.includes(it.unit)) {
+									value = Number(value.replace(it.unit, ''));
+								}
 								let ControllerProps: any = {
-									value: findProps(it.actionType),
-									onChange: (e: any) => commonOnChange(e, it.actionType, it.controller),
+									value,
+									onChange: (e: any) => commonOnChange(e, it.actionType, it.controller, it.unit),
 								};
 								if (it.controller === 'Slider') {
 									ControllerProps.max = it.max;

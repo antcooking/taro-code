@@ -7,6 +7,12 @@
 	overflow-y: scroll;
 	width: @menu-right-width;
 	border-top: 1px solid #eee;
+	.manage-icon {
+		position: fixed;
+    bottom: 40px;
+    left: 260px;
+		cursor: pointer;
+	}
 
 	&-compbox {
 		padding-top: 20px;
@@ -16,6 +22,12 @@
 		align-items: center;
 		flex-wrap: wrap;
 		min-width: 210px;
+		position: relative;
+
+		.add-comp {
+			width: 170px;
+			border-radius: 8px;
+		}
 	}
 
 	&-common-component {
@@ -53,6 +65,7 @@
 
 	.ant-tabs-nav .ant-tabs-tab {
 		padding: 8px 16px !important;
+		margin: 2px 0 0 0 !important;
 	}
 
 	.ant-tabs-tab-btn {
@@ -66,4 +79,51 @@
 	.ant-tabs-tab {
 		border-bottom: 1px dashed #f0f0f0;
 	}
+}
+
+.featureComponents-container {
+	.operate-components-row {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		margin-bottom: 10px;
+	}
+
+	.attr-scroll {
+		max-height: 380px;
+		overflow: hidden;
+		overflow-y: scroll;
+		border-top: 1px solid #d0cccc;
+	}
+	
+	.attr-container {
+		border-bottom: 1px solid #d0cccc;
+		padding-top: 20px;
+		padding-bottom: 30px;
+		margin-bottom: 20px;
+		font-size: 12px;
+		.ant-form-item-label {
+			text-align: left;
+		}
+
+		.attr-item {
+			margin-right: 20px;
+		}
+	}
+
+	.add-group-btn-wrapper {
+		display: flex;
+		justify-content: flex-end;
+	}
+
+	.add-attr-btn-wrapper {
+		display: flex;
+		justify-content: flex-end;
+		padding-right: 122px;
+	}
+}
+
+.react-contexify__item__content {
+	font-size: 12px;
+	text-align: center !important;
 }

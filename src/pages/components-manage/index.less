@@ -1,0 +1,142 @@
+@import '../../style.less';
+
+.components-manage {
+  &-container {
+    margin: 0 auto;
+    width: 900px;
+    background-color: #fff;
+    min-height: 100vh;
+    padding: 10px 20px;
+		position: relative;
+		padding-bottom: 100px;
+		.ant-form-item-label {
+			width: 100px;
+			text-align: left;
+		}
+
+		.ant-upload-picture-card-wrapper {
+			height: 40px;
+		}
+
+		.footer-btns {
+			background-color: #fff;
+			padding: 5px 20px;
+			width: 100%;
+			display: flex;
+			justify-content: flex-end;
+			border-top: 1px solid #333333;
+			position: fixed;
+			left: 0;
+			bottom: 0;
+			z-index: 99;
+			box-shadow: 10px 10px 5px #888888; 
+
+			.ant-btn {
+				border-radius: 4px;
+			}
+		}
+
+		.add-comp {
+			width: 80px;
+			height: 80px;
+		}
+  }
+
+  &-compbox {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 4px;
+    align-items: center;
+		position: relative;
+
+		.edit-comp {
+			position: absolute;
+			right: -14px;
+			bottom: 0px;
+		}
+
+		.delete-comp {
+			position: absolute;
+			right: -14px;
+			top: 0px;
+		}
+  }
+
+  &-common-component {
+		border: 1px solid #d0cccc;
+		text-align: center;
+		margin-bottom: 12px;
+		user-select: none;
+		position: relative;
+		cursor: pointer;
+		width: 80px;
+		height: 80px;
+		font-size: 13px;
+		margin-right: 22px;
+		border-radius: 10px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+
+		.text {
+			margin-top: 1px;
+			color: #333333;
+		}
+
+		img {
+			display: block;
+			width: 40px;
+			height: 40px;
+		}
+	}
+}
+
+.featureComponents-container {
+	&-title {
+		border-left: 4px solid @primary-color;
+		font-size: 16px;
+		line-height: 18px;
+		margin-top: 10px;
+		margin-bottom: 20px;
+		padding-left: 10px;
+	}
+
+	.operate-components-row {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		margin-bottom: 10px;
+	}
+
+	.attr-scroll {
+		border-top: 1px solid #d0cccc;
+		height: auto;
+	}
+	
+	.attr-container {
+		border-bottom: 1px solid #d0cccc;
+		padding-top: 20px;
+		padding-bottom: 30px;
+		margin-bottom: 20px;
+		font-size: 12px;
+		.ant-form-item-label {
+			text-align: left;
+		}
+
+		.attr-item {
+			margin-right: 20px;
+		}
+	}
+
+	.add-group-btn-wrapper {
+		display: flex;
+		justify-content: flex-end;
+	}
+
+	.add-attr-btn-wrapper {
+		display: flex;
+		justify-content: flex-end;
+		padding-right: 122px;
+	}
+}

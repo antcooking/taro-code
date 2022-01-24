@@ -1,10 +1,17 @@
 import React, { createContext, useState, useCallback } from 'react';
-
 interface Idata {
 	targetId?: number;
 	insertIndex?: number;
 	actionData?: Record<string, any>;
+	removePath?: number[];
+	removeIndex?: number;
 	targetPath?: number[];
+	mouseMark?: {
+		left: number;
+		top: number;
+		show: boolean;
+		icon?: string;
+	};
 }
 export type Icontext = {
 	dragData: Idata;
@@ -42,7 +49,7 @@ function DragProvider(props: { children: React.ReactNode | JSX.Element }): JSX.E
 		[dragData, setDragData_]
 	);
 
-	// console.info(dragData.actionData, 'dragData*************************');
+	// console.info(dragData, 'dragData*************************');
 
 	return <Provider_ value={{ dragData, setDragData }}>{props.children}</Provider_>;
 }

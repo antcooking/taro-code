@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkcode_cook=self.webpackChunkcode_cook||[]).push([[7343],{27343:(r,e,o)=>{o.r(e),o.d(e,{taro_custom_wrapper_core:()=>n});var c=o(65943),n=function(){function r(r){(0,c.r)(this,r)}return r.prototype.render=function(){return(0,c.h)(c.H,null)},r}()}}]);

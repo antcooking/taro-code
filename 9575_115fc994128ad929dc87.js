@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkcode_cook=self.webpackChunkcode_cook||[]).push([[9575],{89575:(o,n,r)=>{r.r(n),r.d(n,{taro_navigation_bar_core:()=>t});var e=r(65943),t=function(){function o(o){(0,e.r)(this,o)}return o.prototype.componentDidLoad=function(){console.error("H5 暂不支持 NavigationBar 组件！")},o.prototype.render=function(){return(0,e.h)(e.H,null)},o}()}}]);

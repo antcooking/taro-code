@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkcode_cook=self.webpackChunkcode_cook||[]).push([[8910],{58910:(o,e,n)=>{n.r(e),n.d(e,{taro_open_data_core:()=>t});var r=n(65943),t=function(){function o(o){(0,r.r)(this,o)}return o.prototype.componentDidLoad=function(){console.error("H5 暂不支持 OpenData 组件！")},o.prototype.render=function(){return(0,r.h)(r.H,null)},o}()}}]);

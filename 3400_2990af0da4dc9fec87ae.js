@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkcode_cook=self.webpackChunkcode_cook||[]).push([[3400],{23400:(o,e,r)=>{r.r(e),r.d(e,{taro_camera_core:()=>c});var n=r(65943),c=function(){function o(o){(0,n.r)(this,o)}return o.prototype.componentDidLoad=function(){console.error("H5 暂不支持 Camera 组件！")},o.prototype.render=function(){return(0,n.h)(n.H,null)},o}()}}]);

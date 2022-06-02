@@ -2,11 +2,12 @@ export const baseComponents = [
 	{
 		type: 'div',
 		name: '容器',
-		icon: 'https://file-mg.dian-dev.com/c/taowu/2022/01/18/11_12_41/194.png',
+		icon: 'https://file-mg.dian.so/v/taowu/2022/05/26/18_16_49/241.png',
 		props: {
 			style: {
-				minHeight: 160,
+				minHeight: 60,
 				padding: 60,
+				width: 750,
 			},
 			children: [],
 		},
@@ -16,11 +17,16 @@ export const baseComponents = [
 					name: '样式设置',
 					data: [
 						{
+							name: '类名(class)',
+							controller: 'Input',
+							actionType: 'className',
+						},
+						{
 							name: '内边距',
 							controller: 'InputNumber',
 							actionType: 'style.padding',
 							min: 0,
-							max: 60,
+							max: 160,
 						},
 						{
 							name: '背景颜色',
@@ -32,14 +38,42 @@ export const baseComponents = [
 							controller: 'InputNumber',
 							actionType: 'style.marginTop',
 							min: 0,
-							max: 60,
+							max: 160,
 						},
 						{
 							name: '下间距',
 							controller: 'InputNumber',
 							actionType: 'style.marginBottom',
 							min: 0,
-							max: 60,
+							max: 160,
+						},
+						{
+							name: '左间距',
+							controller: 'InputNumber',
+							actionType: 'style.marginLeft',
+							min: 0,
+							max: 160,
+						},
+						{
+							name: '右间距',
+							controller: 'InputNumber',
+							actionType: 'style.marginRight',
+							min: 0,
+							max: 160,
+						},
+						{
+							name: '宽度',
+							controller: 'InputNumber',
+							actionType: 'style.width',
+							min: 0,
+							max: 750,
+						},
+						{
+							name: '高度',
+							controller: 'InputNumber',
+							actionType: 'style.height',
+							min: 0,
+							max: 550,
 						},
 					],
 				},
@@ -49,7 +83,7 @@ export const baseComponents = [
 	{
 		type: 'span',
 		name: '文本',
-		icon: 'https://file-mg.dian-dev.com/c/taowu/2022/01/18/11_11_05/659.png',
+		icon: 'https://file-mg.dian.so/v/taowu/2022/05/26/18_16_02/46.png',
 		props: {
 			style: {
 				display: 'block',
@@ -64,6 +98,11 @@ export const baseComponents = [
 				{
 					name: '属性设置',
 					data: [
+						{
+							name: '类名(class)',
+							controller: 'Input',
+							actionType: 'className',
+						},
 						{
 							name: '文本内容',
 							controller: 'TextArea',
@@ -97,11 +136,15 @@ export const baseComponents = [
 							options: [
 								{
 									label: '正常',
-									value: 600,
+									value: 400,
 								},
 								{
-									label: '加粗',
+									label: '小粗',
 									value: 500,
+								},
+								{
+									label: '大粗',
+									value: 700,
 								},
 							],
 						},
@@ -171,19 +214,24 @@ export const baseComponents = [
 		type: 'img',
 		name: '图片',
 		props: {
-			src: 'https://file-mg.dian-dev.com/c/taowu/2022/01/18/11_11_40/460.png',
+			src: 'https://file-mg.dian.so/v/taowu/2022/05/26/18_15_23/33.png',
 			style: {
 				display: 'block',
 				width: 600,
 			},
 		},
-		icon: 'https://file-mg.dian-dev.com/c/taowu/2022/01/18/11_11_40/460.png',
+		icon: 'https://file-mg.dian.so/v/taowu/2022/05/26/18_15_23/33.png',
 		hasNoChildren: true,
 		featurePannel: {
 			baseSetting: [
 				{
 					name: '属性设置',
 					data: [
+						{
+							name: '类名(class)',
+							controller: 'Input',
+							actionType: 'className',
+						},
 						{
 							name: '图片上传',
 							controller: 'ImageUpload',

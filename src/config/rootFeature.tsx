@@ -9,6 +9,11 @@ export const rootFeature = {
 					actionType: 'title',
 				},
 				{
+					name: '类名(class)',
+					controller: 'Input',
+					actionType: 'className',
+				},
+				{
 					name: '背景颜色',
 					controller: 'ColorPicker',
 					actionType: 'style.backgroundColor',

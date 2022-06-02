@@ -8,7 +8,7 @@ export default function MouseMark(): JSX.Element {
 
 	const onDrag = useCallback(
 		function () {
-			setTimeout(() => {
+			requestIdleCallback(() => {
 				setDragData({
 					// @ts-ignore
 					mouseMark: {
@@ -16,7 +16,7 @@ export default function MouseMark(): JSX.Element {
 						show: false,
 					},
 				});
-			}, 16);
+			});
 		},
 		[dragData.mouseMark, setDragData]
 	);

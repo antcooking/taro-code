@@ -45,4 +45,25 @@
 	&-scaleminus {
 		margin-right: 100px;
 	}
+
+}
+
+.code-drawer {
+	.code-box {
+		height: calc(100% - 40px);
+		overflow: scroll;
+		position: relative;
+
+		.copyBtn {
+			position: absolute;
+			right: 20px;
+			top:20px;
+			font-size: 22px;
+			z-index: 999;
+		}
+	}
+	
+	.ant-tabs {
+		margin-top: -20px;
+	}
 }

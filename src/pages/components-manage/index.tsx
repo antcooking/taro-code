@@ -1,4 +1,4 @@
-import { useState, useContext, useCallback } from 'react';
+import { useState, useContext, useCallback, useEffect } from 'react';
 import { Tabs, Button, Input, Form, Select, message } from 'antd';
 import { Link } from 'react-router-dom';
 import context from '../../store/context';
@@ -29,6 +29,16 @@ export default function ComponentsManage() {
 		dispatch,
 		state: { componentsPannel },
 	} = useContext(context);
+
+	useEffect(function () {
+		const COMP_PANNEL: any = localStorage.getItem('COMP_PANNEL');
+		if (COMP_PANNEL) {
+			dispatch({
+				type: 'components-pannel',
+				payload: JSON.parse(COMP_PANNEL),
+			});
+		}
+	}, []);
 
 	const dataByController = useCallback(
 		function (controller: string) {
@@ -103,7 +113,7 @@ export default function ComponentsManage() {
 
 	const addAttr = useCallback(
 		function (index: number) {
-			componentState.featurePannel.baseSetting[index].data.push(defaultAttrItem);
+			componentState.featurePannel.baseSetting[index].data.push({ ...defaultAttrItem });
 			setComponentState({
 				...componentState,
 			});
@@ -144,7 +154,8 @@ export default function ComponentsManage() {
 	const deleteComponent = useCallback(
 		function () {
 			//@ts-ignore
-			componentsPannel[Number(activeKey)].data.splice(editIndex, 0);
+			componentsPannel[Number(activeKey)].data.splice(editIndex, 1);
+			console.info(componentsPannel, 'componentsPannel', Number(activeKey), editIndex);
 			dispatch({
 				type: 'components-pannel',
 				payload: componentsPannel,
@@ -152,7 +163,7 @@ export default function ComponentsManage() {
 
 			localStorage.setItem('COMP_PANNEL', JSON.stringify(componentsPannel));
 		},
-		[componentsPannel, dispatch]
+		[componentsPannel, dispatch, editIndex]
 	);
 
 	const changeGroupName = useCallback(
@@ -236,9 +247,11 @@ export default function ComponentsManage() {
 										className={`${preCls}-common-component`}
 										onMouseMove={() => setEditIndex(inx)}
 										onMouseLeave={() => {
-											setTimeout(() => {
-												setEditIndex(undefined);
-											}, 2000);
+											if (!isEdit) {
+												setTimeout(() => {
+													setEditIndex(undefined);
+												}, 2000);
+											}
 										}}
 									>
 										<img src={it.icon} draggable={false} />
@@ -358,7 +371,7 @@ export default function ComponentsManage() {
 												className="attr-item"
 												placeholder="请输入属性默认值"
 												value={findValueByActionType(dd.actionType)}
-												onChange={(e) => {
+												onChange={(e: any) => {
 													if (!dd.actionType) return message.error('请先输入字段名称');
 													changeProps(e.target.value, dd.actionType);
 												}}

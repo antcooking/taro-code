@@ -107,8 +107,9 @@ function DeepRender(params: {
 	path: Array<number>;
 	dragCon: IDragContext;
 	con: Icontext;
+	key?: string;
 }): any {
-	const { data, path, dragCon, con } = params;
+	const { data, path, dragCon, con, key = '' } = params;
 	const { setDragData, dragData } = dragCon;
 
 	const { state, dispatch } = con;
@@ -240,10 +241,15 @@ function DeepRender(params: {
 		function (e, item, index) {
 			e.stopPropagation();
 			const actionData = deepCopy(item);
+			const startTime = new Date().getTime();
 
 			document.onmousemove = function (ev) {
 				ev.stopPropagation();
 				if (dragData.mouseMark?.show) return;
+				if (new Date().getTime() - startTime < 60) {
+					document.onmousemove = null;
+					return;
+				}
 				setDragData({
 					actionData,
 					removePath: path,
@@ -267,10 +273,12 @@ function DeepRender(params: {
 			};
 
 			document.onmouseup = function () {
+				if (new Date().getTime() - startTime < 60) {
+					document.onmousemove = null;
+					return;
+				}
 				document.onmousemove = null;
-				setDragData({
-					mouseMark: undefined,
-				});
+				setDragData();
 			};
 		},
 		[dragData, setDragData]
@@ -278,6 +286,7 @@ function DeepRender(params: {
 
 	const itemRender = function (item: any, index: number, proxyMargin?: string) {
 		let style_dl: any = {};
+		const muiltRender = [];
 		if (proxyMargin && item.props.style) {
 			Object.keys(item.props.style).forEach((key) => {
 				if (!key.includes('margin')) style_dl[key] = item.props.style[key];
@@ -289,12 +298,24 @@ function DeepRender(params: {
 			...style,
 		};
 
+		if (item.muilt && item.muilt > 1) {
+			const muiltProps = deepCopy(item.props);
+			delete muiltProps.style;
+			for (let i = 0; i < item.muilt; i++) {
+				muiltRender.push(muiltProps);
+			}
+		}
+
 		if (item.id === dragData.targetId) {
 			style_.border = '4px solid #3a2291';
 		}
 
 		if (item.parent && item.parent.id === dragData.targetId && index === dragData.insertIndex) {
 			style_.borderTop = '4px solid #3a2291';
+		}
+
+		if (item.parent && item.parent.id === dragData.targetId && index + 1 === dragData.insertIndex) {
+			style_.borderBottom = '4px solid #3a2291';
 		}
 
 		if (
@@ -307,36 +328,79 @@ function DeepRender(params: {
 		}
 
 		return (
-			<ItemRender
-				{...deleteChildren(item.props)}
-				style={style_}
-				key={`${preCls}-item${index}#${item.id || -1}`}
-				className={
-					classNames({
-						[`${preCls}-common-desc`]: mode === 'edite',
-						[`${preCls}-common-desc-active`]:
-							featurePannel['activeId'] &&
-							mode === 'edite' &&
-							featurePannel['activeId'] === item.id,
-					}) + ` ${item.props.className || ''}`
-				}
-				id={`data-item${item.id}`}
-				onDrop={onDrop}
-				onDragOver={(e: any) => onDragOver(index, e, item)}
-				onClick={(e: any) => setActive(e, item, index)}
-				onMouseDown={function (e: any) {
-					onmouseDown(e, item, index);
-				}}
-			>
-				{!item.props.children || item.props.children.length === 0 ? undefined : (
-					<DeepRender
-						data={item.props.children}
-						path={path.concat(index)}
-						dragCon={dragCon}
-						con={con}
-					/>
+			<>
+				{muiltRender.length === 1 || muiltRender.length === 0 ? (
+					<ItemRender
+						{...deleteChildren(item.props)}
+						style={style_}
+						key={`${preCls}-${key}-${index}`}
+						className={
+							classNames({
+								[`${preCls}-common-desc`]: mode === 'edite',
+								[`${preCls}-common-desc-active`]:
+									featurePannel['activeId'] &&
+									mode === 'edite' &&
+									!item.muilt &&
+									featurePannel['activeId'] === item.id,
+							}) + ` ${item.props.className || ''}`
+						}
+						id={`data-item${item.id}`}
+						onDrop={onDrop}
+						onDragOver={(e: any) => onDragOver(index, e, item)}
+						onClick={(e: any) => setActive(e, item, index)}
+						onMouseDown={function (e: any) {
+							onmouseDown(e, item, index);
+						}}
+					>
+						{!item.props.children || item.props.children.length === 0 ? undefined : (
+							<DeepRender
+								data={item.props.children}
+								path={path.concat(index)}
+								dragCon={dragCon}
+								con={con}
+								key={`${key}-${index}`}
+							/>
+						)}
+					</ItemRender>
+				) : (
+					<div
+						className={
+							classNames({
+								[`${preCls}-common-desc`]: mode === 'edite',
+								[`${preCls}-common-desc-active`]:
+									featurePannel['activeId'] &&
+									mode === 'edite' &&
+									featurePannel['activeId'] === item.id,
+							}) + ` ${item.props.className || ''}`
+						}
+						style={style_}
+						onDrop={onDrop}
+						onDragOver={(e: any) => onDragOver(index, e, item)}
+						onClick={(e: any) => setActive(e, item, index)}
+						onMouseDown={function (e: any) {
+							onmouseDown(e, item, index);
+						}}
+					>
+						{muiltRender.map((_, mIndex) => (
+							<ItemRender
+								{...deleteChildren(item.props)}
+								key={`${preCls}-${key}-${index}${mIndex}`}
+								id={`data-item${item.id}`}
+							>
+								{!item.props.children || item.props.children.length === 0 ? undefined : (
+									<DeepRender
+										data={item.props.children}
+										path={path.concat(index)}
+										dragCon={dragCon}
+										con={con}
+										key={`${key}-${index}`}
+									/>
+								)}
+							</ItemRender>
+						))}
+					</div>
 				)}
-			</ItemRender>
+			</>
 		);
 	};
 
@@ -419,7 +483,7 @@ function DeepRender(params: {
 			{data.map((item: any, index: number) => {
 				if (typeof item !== 'string') {
 					return (
-						<>
+						<div key={`${preCls}-container-${index}`}>
 							{featurePannel['activePath'] &&
 							featurePannel['activePath'].join(',') === path.concat(index).join(',') ? (
 								<div
@@ -452,7 +516,7 @@ function DeepRender(params: {
 							) : (
 								itemRender(item, index)
 							)}
-						</>
+						</div>
 					);
 				} else return item;
 			})}

@@ -1,15 +1,16 @@
-import { Form, Tabs, Upload } from 'antd';
+import { Checkbox, Form, Select, Tabs, Upload } from 'antd';
 import Antd from './com/index';
+import { InputNumber } from 'antd';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import context from '../../store/context';
 import './index.less';
 import deepCopy from '../../utils/deepcopy';
 import { rootFeature } from '../../config/rootFeature';
-import { render } from '@tarojs/taro';
 
 const preCls = 'cookCode-feature-pannel';
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
+const { Option } = Select;
 
 export default function MenuLeft() {
 	const {
@@ -131,11 +132,99 @@ export default function MenuLeft() {
 		[data, dispatch, featurePannel]
 	);
 
+	const setMutil = useCallback(
+		function (value) {
+			const __data = deepCopy(data);
+			let __target: any = __data;
+
+			featurePannel?.['activePath'].forEach((t: any, index: number) => {
+				if (t !== -1 && index > 0) {
+					if (index === 1) {
+						__target = __target.data[t];
+					} else if (__target.props.children) {
+						__target = __target.props.children[t];
+					}
+				}
+			});
+
+			const muiltFields: string[] = [];
+
+			{
+				(_featurePannel?.baseSetting || []).map((item: any, index: number) => (
+					<div className="featurePannel-item" key={`featurePannel-item#-${index}`}>
+						{item.data.map((it: any) => {
+							muiltFields.push(it.actionType);
+						})}
+					</div>
+				));
+			}
+
+			__target.muilt = value;
+			__target.muiltFields = muiltFields;
+
+			dispatch({
+				type: 'data-update',
+				payload: {
+					data: __data.data,
+					props: __data.props,
+				},
+			});
+		},
+		[featurePannel, data, dispatch, _featurePannel]
+	);
+
+	const getCurrentData = () => {
+		const __data = deepCopy(data);
+		let __target: any = __data;
+
+		(featurePannel?.['activePath'] || []).forEach((t: any, index: number) => {
+			if (t !== -1 && index > 0) {
+				if (index === 1) {
+					__target = __target.data[t];
+				} else if (__target.props.children) {
+					__target = __target.props.children[t];
+				}
+			}
+		});
+		return __target || {};
+	};
+
+	const changeMuiltFields = useCallback(
+		function (t) {
+			const __data = deepCopy(data);
+			let __target: any = __data;
+
+			featurePannel?.['activePath'].forEach((t: any, index: number) => {
+				if (t !== -1 && index > 0) {
+					if (index === 1) {
+						__target = __target.data[t];
+					} else if (__target.props.children) {
+						__target = __target.props.children[t];
+					}
+				}
+			});
+
+			if (__target.muiltFields.includes(t)) {
+				__target.muiltFields.splice(__target.muiltFields.indexOf(t), 1);
+			} else {
+				__target.muiltFields.push(t);
+			}
+
+			dispatch({
+				type: 'data-update',
+				payload: {
+					data: __data.data,
+					props: __data.props,
+				},
+			});
+		},
+		[featurePannel, data, dispatch]
+	);
+
 	return (
 		<div className={`${preCls}`} style={mode === 'preview' ? { width: 0 } : {}}>
-			<Upload />
-			<Tabs defaultActiveKey="1">
-				<TabPane tab="基础设置" key="1">
+			<Tabs defaultActiveKey="0">
+				<TabPane tab="基础设置" key="0">
 					{(_featurePannel?.baseSetting || []).map((item: any, index: number) => (
 						<div className="featurePannel-item" key={`featurePannel-item-${index}`}>
 							<div className="featurePannel-item-title">{item.name}</div>
@@ -168,11 +257,42 @@ export default function MenuLeft() {
 						</div>
 					))}
 				</TabPane>
-				<TabPane tab="数据设置" key="4">
-					数据设置
-				</TabPane>
+				{featurePannel?.['activePath'] && featurePannel?.['activePath'].length > 1 ? (
+					<TabPane tab="数据设置" key="4">
+						<div className="featurePannel-item-title">批量渲染</div>
+						<InputNumber value={getCurrentData()?.muilt || 1} onChange={setMutil} />
+						<div className="featurePannel-item-title" style={{ marginTop: 20 }}>
+							批量遍历字段
+						</div>
+						{(_featurePannel?.baseSetting || []).map((item: any, index: number) => (
+							<div className="featurePannel-item" key={`featurePannel-item#-${index}`}>
+								{item.data.map((it: any, ind: number) => {
+									return (
+										<FormItem label={it.name} key={`featurePannel-formitem${ind}`}>
+											<Checkbox
+												checked={(getCurrentData()?.muiltFields || []).includes(it.actionType)}
+												onChange={() => changeMuiltFields(it.actionType)}
+											></Checkbox>
+										</FormItem>
+									);
+								})}
+							</div>
+						))}
+					</TabPane>
+				) : (
+					''
+				)}
 				<TabPane tab="事件设置" key="2">
-					事件设置
+					<div className="featurePannel-item">
+						<div className="featurePannel-item-title">事件类型</div>
+						<Select
+							style={{ width: 150 }}
+							placeholder="请选择事件类型"
+							onChange={(e) => console.info(e)}
+						>
+							<Option value={1}>点击弹窗</Option>
+						</Select>
+					</div>
 				</TabPane>
 			</Tabs>
 		</div>

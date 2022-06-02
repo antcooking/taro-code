@@ -3,7 +3,7 @@ export const VantComponents = [
 		type: 'vantui.Button',
 		name: '按钮',
 		hasNoChildren: true,
-		icon: 'https://file-mg.dian-dev.com/c/taowu/2022/01/17/17_36_48/509.png',
+		icon: 'https://file-mg.dian.so/v/taowu/2022/05/26/18_13_37/44.png',
 		props: {
 			style: {},
 			children: ['点击按钮'],
@@ -14,6 +14,11 @@ export const VantComponents = [
 				{
 					name: '按钮-属性设置',
 					data: [
+						{
+							name: '类名(class)',
+							controller: 'Input',
+							actionType: 'className',
+						},
 						{
 							name: '按钮标题',
 							controller: 'Input',
@@ -83,6 +88,22 @@ export const VantComponents = [
 							max: 40,
 							unit: 'px',
 						},
+						{
+							name: '宽度',
+							controller: 'InputNumber',
+							actionType: 'style.width',
+							min: 0,
+							max: 750,
+							unit: 'px',
+						},
+						{
+							name: '高度',
+							controller: 'InputNumber',
+							actionType: 'style.height',
+							min: 0,
+							max: 550,
+							unit: 'px',
+						},
 					],
 				},
 			],
@@ -92,7 +113,7 @@ export const VantComponents = [
 		type: 'vantui.Card',
 		hasNoChildren: true,
 		name: '商品',
-		icon: 'https://file-mg.dian-dev.com/c/taowu/2022/01/17/17_44_52/776.png',
+		icon: 'https://file-mg.dian.so/v/taowu/2022/05/26/18_14_29/402.png',
 		props: {
 			style: {},
 			num: '2',
@@ -100,13 +121,18 @@ export const VantComponents = [
 			price: '10.00',
 			desc: '描述信息',
 			title: '商品标题',
-			thumb: 'https://file-mg.dian-dev.com/c/taowu/2022/01/17/17_44_52/776.png',
+			thumb: 'https://file-mg.dian.so/v/taowu/2022/05/26/18_14_29/402.png',
 		},
 		featurePannel: {
 			baseSetting: [
 				{
 					name: '商品-属性设置',
 					data: [
+						{
+							name: '类名(class)',
+							controller: 'Input',
+							actionType: 'className',
+						},
 						{
 							name: '商品标题',
 							controller: 'Input',
@@ -146,7 +172,7 @@ export const VantComponents = [
 		type: 'vantui.Area',
 		hasNoChildren: true,
 		name: '地区',
-		icon: 'https://file-mg.dian-dev.com/c/taowu/2022/01/17/17_39_11/371.png',
+		icon: 'https://file-mg.dian.so/v/taowu/2022/05/26/18_13_08/371.png',
 		props: {
 			style: {},
 			value: '110101',
@@ -170,6 +196,11 @@ export const VantComponents = [
 				{
 					name: '样式设置',
 					data: [
+						{
+							name: '类名(class)',
+							controller: 'Input',
+							actionType: 'className',
+						},
 						{
 							name: '内边距',
 							controller: 'InputNumber',

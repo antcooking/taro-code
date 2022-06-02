@@ -4,6 +4,7 @@ import Container from '../../components/container';
 import FeaturePanel from '../../components/featurePanel';
 import MouseMark from '../../components/mouseMark';
 import { DragProvider } from '../../utils/drag';
+import './index.less';
 
 export default function Edite() {
 	return (

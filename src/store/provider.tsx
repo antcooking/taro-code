@@ -14,7 +14,7 @@ export function Provider(props: { children: React.ReactNode | JSX.Element }): JS
 
 	const [state, dispatch] = useReducer<IReducer>(reducers, init);
 
-	// console.info(state, 'state');
+	// console.info(state.render.data, 'state');
 
 	return <Provider_ value={{ state: state, dispatch }}>{props.children}</Provider_>;
 }

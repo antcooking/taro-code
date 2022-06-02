@@ -4,7 +4,6 @@ import { dragContext } from '../../utils/drag';
 import './index.less';
 import context from '../../store/context';
 import deepCopy from '../../utils/deepcopy';
-import 'react-contexify/dist/ReactContexify.min.css';
 import { Link } from 'react-router-dom';
 
 const TabPane = Tabs.TabPane;
@@ -33,6 +32,16 @@ export default function MenuLeft() {
 			e.stopPropagation();
 			const actionData = deepCopy(item);
 
+			setDragData({
+				actionData,
+				mouseMark: {
+					icon: item.icon,
+					left: e.clientX,
+					top: e.clientY,
+					show: true,
+				},
+			});
+
 			document.onmousemove = function (ev) {
 				ev.stopPropagation();
 				if (dragData.mouseMark?.show) return;
@@ -48,8 +57,6 @@ export default function MenuLeft() {
 					},
 				});
 
-				document.onmousemove = null;
-
 				dispatch({
 					type: 'featurePannel-update',
 					payload: {
@@ -57,6 +64,8 @@ export default function MenuLeft() {
 						type: '',
 					},
 				});
+
+				document.onmousemove = null;
 			};
 
 			document.onmouseup = function () {
@@ -80,7 +89,9 @@ export default function MenuLeft() {
 									key={`componentsPannelXX${inx}`}
 									className={`${preCls}-common-component`}
 									draggable={false}
-									onMouseDown={(e) => onmouseDown(e, it)}
+									onMouseDown={useCallback(function (e) {
+										onmouseDown(e, it);
+									}, [])}
 								>
 									<img src={it.icon} draggable={false} />
 									<div className="text">{it.name}</div>

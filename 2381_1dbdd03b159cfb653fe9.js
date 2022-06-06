@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkcode_cook=self.webpackChunkcode_cook||[]).push([[2381],{32381:(e,o,n)=>{n.r(o),n.d(o,{taro_share_element_core:()=>t});var r=n(65943),t=function(){function e(e){(0,r.r)(this,e)}return e.prototype.componentDidLoad=function(){console.error("H5 暂不支持 ShareElement 组件！")},e.prototype.render=function(){return(0,r.h)(r.H,null)},e}()}}]);

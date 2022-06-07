@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkcode_cook=self.webpackChunkcode_cook||[]).push([[87],{20087:(o,c,n)=>{n.r(c),n.d(c,{taro_official_account_core:()=>r});var e=n(65943),r=function(){function o(o){(0,e.r)(this,o)}return o.prototype.componentDidLoad=function(){console.error("H5 暂不支持 OfficialAccount 组件！")},o.prototype.render=function(){return(0,e.h)(e.H,null)},o}()}}]);
